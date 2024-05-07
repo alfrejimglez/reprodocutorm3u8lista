@@ -46,6 +46,8 @@
     <script src="https://cdn.plyr.io/3.6.4/plyr.polyfilled.js"></script>
     <!-- HLS.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    
     <script>
         const m3uURL = '1.m3u8';
         let playerInstance;
@@ -131,6 +133,11 @@
 
             // Reproducir el video
             playerInstance.play();
+
+            // Entrar en modo de pantalla completa en dispositivos móviles
+            if (playerInstance.isHTML5 && playerInstance.media.requestFullscreen) {
+                playerInstance.media.requestFullscreen();
+            }
         }
 
         // Cerrar el reproductor de video
