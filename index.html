@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor m3u8</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Plyr CSS -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.4/plyr.css" />
+    <style>
+        #player-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 320px; /* Ancho máximo del reproductor */
+            margin: auto; /* Centrar horizontalmente */
+            z-index: 1000; /* Asegurar que esté por encima de otros elementos */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="channels-list" class="list-group">
+            <!-- Aquí se cargarán los canales -->
+        </div>
+    </div>
+
+    <!-- Plyr JavaScript -->
+    <script src="https://cdn.plyr.io/3.6.4/plyr.polyfilled.js"></script>
+    <!-- HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        const m3uURL = '1.m3u8';
+
+        // Función para cargar los canales
+        function loadChannels() {
+            fetch(m3uURL)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('La solicitud falló: ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    const channelsList = document.getElementById("channels-list");
+                    channelsList.innerHTML = ""; // Limpiar lista antes de cargar nuevos canales
+
+                    // Obtener líneas de la lista m3u8
+                    const lines = data.split('\n');
+
+                    // Filtrar y ordenar los canales de ESPAÑA alfabéticamente
+                    const spanishChannels = lines.filter(line => line.startsWith("#EXTINF:-1,ESPAÑA"))
+                                                 .map(line => line.split(',').slice(1).join(',').trim())
+                                                 .sort();
+
+                    // Mostrar los canales ordenados
+                    spanishChannels.forEach(channelName => {
+                        const channelItem = document.createElement("button");
+                        channelItem.textContent = channelName;
+                        channelItem.className = "list-group-item list-group-item-action";
+                        channelItem.addEventListener("click", () => {
+                            playChannel(channelName, lines);
+                        });
+                        channelsList.appendChild(channelItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error al cargar la lista m3u8:", error);
+                });
+        }
+
+        // Reproducir el canal seleccionado
+        function playChannel(channelName, lines) {
+            const channelLine = lines.find(line => line.includes(channelName));
+            const channelURL = lines[lines.indexOf(channelLine) + 1];
+
+            const player = new Plyr('#player', {
+                controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen']
+            });
+
+            const hls = new Hls();
+            hls.loadSource(channelURL);
+            hls.attachMedia(player.media);
+
+            player.play();
+        }
+
+        // Cargar los canales al cargar la página
+        window.onload = loadChannels;
+    </script>
+    <div id="player-container">
+        <video id="player" class="video-js"></video>
+    </div>
+</body>
+</html>
