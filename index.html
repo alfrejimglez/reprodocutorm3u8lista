@@ -24,13 +24,13 @@
             z-index: 1000; /* Asegurar que esté por encima de otros elementos */
         }
 
-        .close-icon {
-            position: absolute;
+        .fullscreen-close-icon {
+            position: fixed;
             top: 10px;
             left: 10px;
             cursor: pointer;
-            color: #333;
-            z-index: 1001; /* Asegurar que esté por encima del reproductor */
+            color:  red !important;
+            z-index: 1004; /* Asegurar que esté por encima del reproductor y del otro ícono de cierre */
             font-size: 31px; /* Tamaño de la X */
         }
     </style>
@@ -151,10 +151,12 @@
         // Cargar los canales al cargar la página
         window.onload = loadChannels;
     </script>
-    <!-- Icono de cierre -->
-    <i class="fas fa-times close-icon" onclick="closePlayer()"></i>
     <div id="player-container">
+        <i class="fas fa-times fullscreen-close-icon" onclick="closePlayer()"></i>
+
         <video id="player" class="video-js"></video>
+        
     </div>
+    <!-- Icono de cierre en pantalla completa -->
 </body>
 </html>
