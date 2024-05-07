@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reproductor m3u8</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Plyr CSS -->
@@ -21,6 +23,16 @@
             margin: auto; /* Centrar horizontalmente */
             z-index: 1000; /* Asegurar que esté por encima de otros elementos */
         }
+
+        .close-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            cursor: pointer;
+            color: #333;
+            z-index: 1001; /* Asegurar que esté por encima del reproductor */
+            font-size: 31px; /* Tamaño de la X */
+        }
     </style>
 </head>
 <body>
@@ -36,6 +48,7 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
         const m3uURL = '1.m3u8';
+        let playerInstance;
 
         // Función para cargar los canales
         function loadChannels() {
@@ -84,14 +97,14 @@
                             event.stopPropagation(); // Evitar que se reproduzca el canal al hacer clic en el enlace
                         });
 
+                        // Evento de clic para reproducir el canal
+                        channelItem.addEventListener("click", () => {
+                            playChannel(channelURL);
+                        });
+
                         // Agregar elementos al canal
                         channelItem.appendChild(title);
                         channelItem.appendChild(downloadLink);
-
-                        // Evento de clic para reproducir el canal
-                        channelItem.addEventListener("click", () => {
-                            playChannel(channelName, lines);
-                        });
 
                         channelsList.appendChild(channelItem);
                     });
@@ -102,24 +115,37 @@
         }
 
         // Reproducir el canal seleccionado
-        function playChannel(channelName, lines) {
-            const channelLine = lines.find(line => line.includes(channelName));
-            const channelURL = lines[lines.indexOf(channelLine) + 1];
+        function playChannel(channelURL) {
+            // Cerrar el reproductor si ya está abierto
+            closePlayer();
 
-            const player = new Plyr('#player', {
+            // Crear una nueva instancia del reproductor
+            playerInstance = new Plyr('#player', {
                 controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen']
             });
 
+            // Inicializar HLS
             const hls = new Hls();
             hls.loadSource(channelURL);
-            hls.attachMedia(player.media);
+            hls.attachMedia(playerInstance.media);
 
-            player.play();
+            // Reproducir el video
+            playerInstance.play();
+        }
+
+        // Cerrar el reproductor de video
+        function closePlayer() {
+            if (playerInstance) {
+                playerInstance.destroy();
+                playerInstance = null;
+            }
         }
 
         // Cargar los canales al cargar la página
         window.onload = loadChannels;
     </script>
+    <!-- Icono de cierre -->
+    <i class="fas fa-times close-icon" onclick="closePlayer()"></i>
     <div id="player-container">
         <video id="player" class="video-js"></video>
     </div>
