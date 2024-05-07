@@ -1,0 +1,10 @@
+#player-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 320px; /* Ancho máximo del reproductor */
+    margin: auto; /* Centrar horizontalmente */
+    z-index: 1000; /* Asegurar que esté por encima de otros elementos */
+}

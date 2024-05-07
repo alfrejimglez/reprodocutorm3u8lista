@@ -8,6 +8,8 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Plyr CSS -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.6.4/plyr.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         #player-container {
             position: fixed;
@@ -58,12 +60,39 @@
 
                     // Mostrar los canales ordenados
                     spanishChannels.forEach(channelName => {
-                        const channelItem = document.createElement("button");
-                        channelItem.textContent = channelName;
-                        channelItem.className = "list-group-item list-group-item-action";
+                        const channelItem = document.createElement("div");
+                        channelItem.className = "list-group-item d-flex justify-content-between align-items-center";
+                        
+                        // Título del canal
+                        const title = document.createElement("span");
+                        title.textContent = channelName;
+                        
+                        // Icono de descarga
+                        const downloadIcon = document.createElement("i");
+                        downloadIcon.className = "fas fa-download";
+
+                        // Enlace para descargar con extensión .ts
+                        const downloadLink = document.createElement("a");
+                        const channelLine = lines.find(line => line.includes(channelName));
+                        const channelURL = lines[lines.indexOf(channelLine) + 1];
+                        const tsChannelURL = channelURL.replace('.m3u8', '.ts');
+                        downloadLink.href = tsChannelURL;
+                        downloadLink.appendChild(downloadIcon);
+
+                        // Evento de clic para la descarga
+                        downloadLink.addEventListener("click", (event) => {
+                            event.stopPropagation(); // Evitar que se reproduzca el canal al hacer clic en el enlace
+                        });
+
+                        // Agregar elementos al canal
+                        channelItem.appendChild(title);
+                        channelItem.appendChild(downloadLink);
+
+                        // Evento de clic para reproducir el canal
                         channelItem.addEventListener("click", () => {
                             playChannel(channelName, lines);
                         });
+
                         channelsList.appendChild(channelItem);
                     });
                 })
