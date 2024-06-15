@@ -70,6 +70,7 @@
 
                     // Filtrar y ordenar los canales de ESPAÑA alfabéticamente
                     const spanishChannels = lines.filter(line => line.startsWith("#EXTINF:-1,ESPAÑA"))
+                    //#EXTINF:-1,ESPAÑA
                                                  .map(line => line.split(',').slice(1).join(',').trim())
                                                  .sort();
 
